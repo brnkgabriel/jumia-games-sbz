@@ -7,12 +7,15 @@
   import { Skeleton } from './lib/components/ui/skeleton'
   import { common } from './lib/common/index'
   import type { iSettings } from './lib/interfaces/index'
+  import { featurebox } from "./lib/common/index";
 
   const init = async () => {
     const emails = await common.getCredentials()
+    // @ts-ignore
     const settings = window.settings as iSettings
     
     console.log({ emails, settings, from: "2" })
+    const data = await featurebox.get()
     if (!emails) {
       window.parent.location.href = common.redirectUrl()
     }

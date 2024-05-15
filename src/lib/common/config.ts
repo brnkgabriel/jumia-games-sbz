@@ -1,4 +1,6 @@
-export const googleSheetsApi: Record<string, string> = {
+import type { TCountry } from "$lib/interfaces";
+
+export const googleSheetsApi: Record<TCountry, string> = {
   ng: 'https://script.google.com/macros/s/AKfycbyDePyxGd5AoaO8HbJt8m0o_jPTQK0p74NWy9O5enqZ6cLmqhxELr9jfoZ8ECejEkRP/exec',
   ug: 'https://script.google.com/macros/s/AKfycbyqmrtMteTsOmCSEG-B0yEVfDlHCUcrn_o4ASnNnuXYrkC6hRluliPmLY_mhEVovXNQ/exec',
   ci: 'https://script.google.com/macros/s/AKfycbwXIDyUjiQEI-_G8M5ClgMPNq4mNgBbDexnCWcCroShDDMFF2YINGJqeq741BVHbRYXIQ/exec',
