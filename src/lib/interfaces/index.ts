@@ -20,3 +20,10 @@ export interface iSettings {
   language: TLanguage;
   game: TGame;
 }
+
+export interface iRemoteData {
+  userneeds: Record<string, any>[],
+  skus: Record<string, any>[],
+  games: Record<string, any>[],
+  config: Record<string, any>
+}

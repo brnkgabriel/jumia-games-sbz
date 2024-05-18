@@ -15,7 +15,7 @@
     const settings = window.settings as iSettings
     
     console.log({ emails, settings, from: "2" })
-    const data = await featurebox.get()
+    const data = await featurebox.records()
     if (!emails) {
       window.parent.location.href = common.redirectUrl()
     }
