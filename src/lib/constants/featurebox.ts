@@ -4,10 +4,14 @@ import type { iRemoteData, iSKU, iSettings } from "$lib/interfaces"
 import { eConstants, eFeaturebox, eQueries } from "."
 import { Util } from "./utils"
 import { googleSheetsApi } from "$lib/common/config"
+import { Products } from "./products"
 
 export class Featurebox extends Util {
+  #products: Products
   constructor() {
     super()
+
+    this.#products = new Products()
   }
 
 
@@ -27,8 +31,9 @@ export class Featurebox extends Util {
       const games = this.getList(eConstants.INITIATIVE, eConstants.GAMES, data)
       const configList = this.getList(eConstants.INITIATIVE, eConstants.CONFIG, data)
       const config = configList[0] ? this.strToJSON(configList[0].name) : {}
-      const value = { userneeds, skus, games, config, prizes }
+      const value = { userneeds, skus, games, config, prizes } as iRemoteData
       remotestore.set(value)
+      return value
     } catch (error: any) {
       return {}
     }
@@ -91,14 +96,39 @@ export class Featurebox extends Util {
     }
   }
 
-  getSingleBanner() {
+  configAndGameName() {
     const settings = get(settingstore) as iSettings
     const remotedata = get(remotestore) as iRemoteData
     const config = remotedata.config
-
     const game = settings.game.toLowerCase()
+    return { game, config }
+  }
+
+  getSingleBanner() {
+    const {game, config} = this.configAndGameName()
     const mkey = `${game}_mobile_banner`
     return config[mkey]
+  }
+
+  getGames() {
+    const remotedata = get(remotestore) as iRemoteData
+    return remotedata.games
+  }
+
+  getDoubleBanners() {
+    const { config } = this.configAndGameName()
+    const camp1Banner = config[eFeaturebox.CAMP1MDB]
+    const camp1Url = config[eFeaturebox.CAMP1URL]
+    const camp2Banner = config[eFeaturebox.CAMP2MDB]
+    const camp2Url = config[eFeaturebox.CAMP2URL]
+    const camp1 = { banner: camp1Banner, url: camp1Url }
+    const camp2 = { banner: camp2Banner, url: camp2Url }
+    return { camp1, camp2 }
+  }
+
+  getUserneeds() {
+    const remotedata = get(remotestore) as iRemoteData
+    return remotedata.userneeds
   }
   
   getSKUUrl(sku: string) {
@@ -128,97 +158,8 @@ export class Featurebox extends Util {
     } else return ''
   }
 
-  async getskudata(urls: string[]) {
-    try {
-      const promises = await Promise.all(
-        urls.map(async (url) => await this.getSKU(url))
-      )
-      const docs = promises.flat()
-      return docs
-    } catch (error) {
-      this.onError(error)
-      return null
-    }
-  }
-
-  otherMarkets(textCont: string) {
-
-    const startIdx = textCont.indexOf('"products":[{')
-    const regex = /"selectedVariation":"([a-zA-Z0-9-]+)"}/
-    const regExIdx = this.findRegexIndex(textCont, regex) as number
-    let closeIdx = -1
-
-
-
-    if (regExIdx > -1) {
-
-      const substr1 = textCont.substring(regExIdx, textCont.length)
-      // 3 is the index of the character after }]}
-      closeIdx = substr1.indexOf("}]") + 2
-    }
-    const eIdx = regExIdx + closeIdx
-    return '{' + textCont.substring(startIdx, eIdx) + '}'
-  }
-
-  zandoMarket(textCont: string) {
-
-    const startIdx = textCont.indexOf('"products":[{')
-    const productsStr = '{' + textCont.substring(startIdx, textCont.length)
-
-    const closingBraces = this.braceIndices(productsStr, this.escapeStr("}],"))
-    const endIdx = closingBraces[closingBraces.length - 2]
-    return productsStr.substring(0, endIdx + 2) + '}'
-  }
-
-  mobile(raw_products: string) {
-    var start = raw_products.indexOf('"products":')
-    var products = '{' + raw_products.substring(start, raw_products.length)
-    var l_idx = products.indexOf(',"head"')
-    return products.substring(0, l_idx - 1) + '}'
-  }
-
-  desktop(raw_products: string) {
-    var start = raw_products.indexOf('"products":')
-    var products = '{' + raw_products.substring(start, raw_products.length)
-    var closing_brace_indices = this.braceIndices(products, this.escape("}]"))
-    var last_idx = closing_brace_indices[closing_brace_indices.length - 1]
-    return products.substring(0, last_idx + 2) + '}'
-  }
   escape(str: string) {
     return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-  }
-
-  // format(raw_products: string) {
-  //   return innerWidth > 600 ? this.desktop(raw_products) : this.mobile(raw_products)
-  // }
-
-  async getSKU(url: string) {
-    const response = await fetch(url)
-    const textCont = await response.text()
-
-
-    // const settings = this.singleton.getSettings()
-    // let products = settings.country === "za" ? this.zandoMarket(textCont) : this.otherMarkets(textCont)
-
-    // try {
-    //   const products = this.getProducts(textCont)
-    //   const formatted = this.mobile(products)
-    //   const parsed = JSON.parse(formatted).products
-    //   return parsed
-    // } catch (error) {
-    //   this.onError(error)
-    //   return []
-    // }
-  }
-
-  getProducts(data: string) {
-    // this.fetched.innerHTML = data;
-    // const textC: string[] = []
-    // const scripts = this.fetched.querySelectorAll('script')
-    // this.fetched.innerHTML = ''
-    // scripts.forEach(script => textC.push(script.innerHTML))
-    // const foundIdx = textC.findIndex(script => script.indexOf('"products":[{') !== -1) 
-    // return textC[foundIdx]
   }
 
   findRegexIndex(str: string, regex: RegExp) {

@@ -8,4 +8,6 @@ const settingstore = writable<iSettings | undefined>()
 
 const fboxstore = writable<Featurebox>(fbox)
 
+const emailstore = writable<string | undefined>()
+
 export { remotestore, settingstore, fboxstore }

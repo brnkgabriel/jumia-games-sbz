@@ -19,14 +19,22 @@ export interface iSettings {
   country: TCountry;
   language: TLanguage;
   game: TGame;
+  email: string
 }
 
 export interface iRemoteData {
-  userneeds: Record<string, any>[],
+  userneeds: iGameAndUserneed[],
   skus: Record<string, any>[],
-  games: Record<string, any>[],
+  games: iGameAndUserneed[],
   config: Record<string, any>,
   prizes: Record<string, any>[]
+}
+
+export interface iGameAndUserneed {
+  name: string;
+  image: string;
+  url: string;
+  initiative: string;
 }
 
 
