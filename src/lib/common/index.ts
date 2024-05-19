@@ -1,6 +1,8 @@
 import { eConstants, eFeaturebox } from "$lib/constants/index"
 import type { TCountry, TGame, TLanguage, iSettings } from "$lib/interfaces/index";
 import { googleSheetsApi } from "./config";
+import { remotestore, settingstore } from "$lib/stores/index";
+import { get } from "svelte/store";
 
 class Common {
   async getCredentials() {
@@ -33,60 +35,4 @@ class Common {
   })
 }
 
-class Featurebox {
-  #game: TGame = "hextris";
-  #language: TLanguage = "en";
-  #country: TCountry = "ng"
-  constructor() { }
-
-  setSettings(settings: iSettings) {
-    this.#game = settings.game
-    this.#language = settings.language
-    this.#country = settings.country
-  }
-
-  async records() {
-    const url = googleSheetsApi[this.#country]
-    try {
-      const response = await fetch(url)
-      const json = await response.json()
-      const data = json.records
-
-      const userneeds = this.get(eConstants.INITIATIVE, eConstants.USERNEED, data)
-      const skus = this.get(eConstants.INITIATIVE, eConstants.FBSKUS, data)
-      const games = this.get(eConstants.INITIATIVE, eConstants.GAMES, data)
-      const configList = this.get(eConstants.INITIATIVE, eConstants.CONFIG, data)
-      const config = configList[0] ? this.strToJSON(configList[0].name) : {}
-      console.log({ userneeds, skus, games, config })
-    } catch (error: any) {
-      return {}
-    }
-  }
-
-  get(key: string, value: string, list: Record<string, any>[]) {
-    return list.filter(item => {
-      if (item[key]) {
-        return item[key].toLowerCase() == value.toLowerCase()
-      }
-      return false
-    })
-  }
-
-  strToJSON(str: string) {
-    var replaced = this.regExReplace(str)
-    var props = replaced.split('|')
-    return props.reduce(this.reduceProp.bind(this), {})
-  }
-    
-  reduceProp(arr, prop) {
-    var key_val = prop.split('==')
-    var key = key_val[0]
-    arr[key] = key_val[1] ? key_val[1].toLocaleString() : key_val[1]
-    return arr
-  }
-  
-  regExReplace(str: string) { return str.replace(/\"|\,/g, '') }
-}
-
 export const common = new Common();
-export const featurebox = new Featurebox()

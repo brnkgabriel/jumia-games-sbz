@@ -1,21 +1,22 @@
 
 <script lang="ts">
   import "./app.css";
-  import Counter from './lib/Counter.svelte'
   import Carousel from './lib/components/widgets/Carousel.svelte'
   import Tabs from './lib/components/widgets/Tabs.svelte'
   import { Skeleton } from './lib/components/ui/skeleton'
   import { common } from './lib/common/index'
   import type { iSettings } from './lib/interfaces/index'
-  import { featurebox } from "./lib/common/index";
+  import { remotestore, settingstore, fboxstore } from "$lib/stores";
 
+  $: console.log({ remotestore: $remotestore })
   const init = async () => {
     const emails = await common.getCredentials()
     // @ts-ignore
-    const settings = window.settings as iSettings
+    $settingstore = window.settings as iSettings
     
-    console.log({ emails, settings, from: "2" })
-    const data = await featurebox.records()
+    
+
+    $fboxstore.build()
     if (!emails) {
       window.parent.location.href = common.redirectUrl()
     }
@@ -26,9 +27,16 @@
 
 
 <main class="flex flex-col gap-2 p-2  max-w-[480px] mx-auto">
-  <Skeleton class="w-full aspect-[730/292] rounded" />
+  <div class="aspect-[730/292] bg-white p-2 rounded-md shadow">
+    {#await $fboxstore.setRemotestore()}
+      <Skeleton class="w-full rounded" />
+    {:then number}
+      <img src={$fboxstore.getSingleBanner()} class="w-full rounded" alt="top banner" />
+    {:catch error}
+      <p style="color: red">{error.message}</p>
+    {/await}
+  </div>
   <div class="flex items-center justify-between gap-2">
-    
     <div class="flex items-center justify-center gap-2">
       <Skeleton class="h-4 w-16" />
       <Skeleton class="h-4 w-16" />

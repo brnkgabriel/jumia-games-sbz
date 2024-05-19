@@ -25,5 +25,76 @@ export interface iRemoteData {
   userneeds: Record<string, any>[],
   skus: Record<string, any>[],
   games: Record<string, any>[],
-  config: Record<string, any>
+  config: Record<string, any>,
+  prizes: Record<string, any>[]
+}
+
+
+export interface iSKU {
+  sku: string;
+  name: string;
+  displayName: string;
+  brand: string;
+  sellerId: number;
+  isShopExpress?: boolean;
+  categories: string;
+  prices: iPrice;
+  tags: string;
+  rating?: iRating,
+  image: string;
+  url: string;
+  badges?: {
+    campaign: iCampaign;
+    main: iMain;
+  },
+  isBuyable: boolean
+  shopExpress?: {
+      title: string;
+  },
+  shopGlobal?: iGlobal,
+  simples?: iSimple[],
+  selectedVariation?: string;
+  variationSelection?: boolean;
+}
+
+export interface iGlobal {
+identifier: string,
+name: string
+}
+
+export interface iPrice {
+discount: string;
+oldPrice: string;
+oldPriceEuro: string;
+price: string;
+priceEuro: string;
+rawPrice: string;
+taxEuro: string;
+}
+
+export interface iRating {
+average: number;
+totalRatings: number;
+}
+export interface iSimple {
+  sku: string;
+  loginUrl: string;
+  isBuyable: boolean;
+  name: string;
+  prices: iPrice
+}
+
+export interface iMain {
+  name: string;
+  identifier: string;
+  url: string;
+}
+
+export interface iCampaign {
+  name: string;
+  identifier: string;
+  image: string;
+  url: string;
+  bgColor: string;
+  txtColor: string;
 }
