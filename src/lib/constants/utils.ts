@@ -9,7 +9,6 @@ export class Util {
   protected minutesInADay: number = 1440
   protected minutesInMs: number = 60000
   protected numberExtract = (str: string) => Number(str.replace(/,/g, '').match(/\d+(\.\d+)?/g))
-  protected config: Record<string, any> = {}
   protected isMobile: boolean = navigator.userAgent.toLowerCase().includes("mobi")
   protected regExReplace = (str: string) => str.replace(/\"|\,/g, '')
   protected getData = (key: string, value: string, list: Record<string, any>[]) => list.filter(item => {
@@ -35,8 +34,9 @@ export class Util {
   protected endTime = (time: number) => {
     const config = get(remotestore) as iRemoteData
     const settings = get(settingstore) as iSettings
-    
+
     const minuteDuration = this.minDuration()
+    console.log({ minuteDuration })
     return time + (minuteDuration * 60 * 1000)
   }
   protected pad = (time: number) => time.toString().length == 1 ? '0' + time : time
@@ -45,13 +45,15 @@ export class Util {
   public getDate = () => this.dateUtils.getDate()
 
 
-  constructor() { 
+  constructor() {
   }
 
-  minDuration () {
+  minDuration() {
     const settings = get(settingstore) as iSettings
+    const remotedata = get(remotestore) as iRemoteData
+    const { config } = remotedata
     const keyStr = `${eConstants.MINDURATION}_${settings.game}`
-    const gameDuration = this.config[keyStr]
+    const gameDuration = config[keyStr]
     return Number(gameDuration)
   }
 

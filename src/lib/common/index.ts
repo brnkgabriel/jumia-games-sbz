@@ -17,6 +17,8 @@ class Common {
     }
   }
 
+  emailPrefix = (email: string) => email.split("@")[0];
+  
   extractEmails(str: string) {
     const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/gi;
     return str.match(emailRegex);
@@ -36,3 +38,25 @@ class Common {
 }
 
 export const common = new Common();
+
+type FormatToken = 'YYYY' | 'MM' | 'MMM' | 'DD' | 'HH' | 'mm' | 'ss';
+
+export function format(date: Date, format: string): string {
+  const months: string[] = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  const tokens: Record<FormatToken, string> = {
+      YYYY: date.getFullYear().toString(),
+      MM: String(date.getMonth() + 1).padStart(2, '0'), // Months are zero-indexed
+      MMM: months[date.getMonth()],
+      DD: String(date.getDate()).padStart(2, '0'),
+      HH: String(date.getHours()).padStart(2, '0'),
+      mm: String(date.getMinutes()).padStart(2, '0'),
+      ss: String(date.getSeconds()).padStart(2, '0'),
+  };
+
+  // Ensure `MMM` is processed before `MM` to avoid partial replacements
+  return format.replace(/YYYY|MMM|MM|DD|HH|mm|ss/g, (match) => tokens[match as FormatToken]);
+}

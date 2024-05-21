@@ -13,6 +13,8 @@ const buttonVariants = tv({
 			secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
 			ghost: "hover:bg-accent hover:text-accent-foreground",
 			link: "text-primary underline-offset-4 hover:underline",
+			jumia: "text-white bg-[#f68b1e] uppercase",
+			officialstore: "absolute bottom-2 left-2 text-white text-xs bg-[#276076] text-[10px] font-semibold !p-2 rounded w-fit !h-0"
 		},
 		size: {
 			default: "h-10 px-4 py-2",

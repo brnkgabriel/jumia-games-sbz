@@ -15,8 +15,8 @@
   <Tabs.Content value="game" class="w-full">
     <iframe title="hextris" src="https://static-cms-cdn.netlify.app/hextris/" class="border-none rounded-lg w-full aspect-square"></iframe> 
     <div class="flex items-center justify-center gap-2 mt-2">
-      <Skeleton class="w-16 h-10" />
-      <Skeleton class="w-16 h-10" />
+      <Button class="rounded-full">Submit</Button>
+      <Button variant="outline" class="rounded-full">Restart</Button>
     </div>
   </Tabs.Content>
   <Tabs.Content value="leaderboard">

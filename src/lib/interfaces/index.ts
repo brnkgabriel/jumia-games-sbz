@@ -24,16 +24,36 @@ export interface iSettings {
 
 export interface iRemoteData {
   userneeds: iGameAndUserneed[],
-  skus: Record<string, any>[],
+  skus: iCatalog[],
   games: iGameAndUserneed[],
   config: Record<string, any>,
-  prizes: Record<string, any>[]
+  prizes: iPrize[],
+  products: iSKU[]
+}
+
+export interface iCatalog {
+  sku: string;
+  initiative: string;
 }
 
 export interface iGameAndUserneed {
   name: string;
   image: string;
   url: string;
+  initiative: string;
+}
+
+export interface iPrize {
+  sku: string;
+  name: string;
+  desc: string;
+  units: string;
+  category: string;
+  url: string;
+  image: string;
+  value: string;
+  type: string;
+  time: string;
   initiative: string;
 }
 
@@ -106,3 +126,5 @@ export interface iCampaign {
   bgColor: string;
   txtColor: string;
 }
+
+export type FormatToken = 'YYYY' | 'MM' | 'MMM' | 'DD' | 'HH' | 'mm' | 'ss';

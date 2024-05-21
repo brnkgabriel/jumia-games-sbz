@@ -1,6 +1,6 @@
 import { get } from "svelte/store"
 import { remotestore, settingstore } from "$lib/stores"
-import type { iRemoteData, iSKU, iSettings } from "$lib/interfaces"
+import type { iPrize, iRemoteData, iSKU, iSettings } from "$lib/interfaces"
 import { eConstants, eFeaturebox, eQueries } from "."
 import { Util } from "./utils"
 import { googleSheetsApi } from "$lib/common/config"
@@ -14,7 +14,6 @@ export class Featurebox extends Util {
     this.#products = new Products()
   }
 
-
   async setRemotestore() {
     const settings = get(settingstore) as iSettings
     const country = settings.country
@@ -26,12 +25,12 @@ export class Featurebox extends Util {
       const data = json.records
 
       const prizes = this.getList(eConstants.INITIATIVE, settings.game, data)
-      const userneeds = this.getList(eConstants.INITIATIVE, eConstants.USERNEED, data)
-      const skus = this.getList(eConstants.INITIATIVE, eConstants.FBSKUS, data)
-      const games = this.getList(eConstants.INITIATIVE, eConstants.GAMES, data)
+      // const userneeds = this.getList(eConstants.INITIATIVE, eConstants.USERNEED, data)
+      // const skus = this.getList(eConstants.INITIATIVE, eConstants.FBSKUS, data)
+      // const games = this.getList(eConstants.INITIATIVE, eConstants.GAMES, data)
       const configList = this.getList(eConstants.INITIATIVE, eConstants.CONFIG, data)
       const config = configList[0] ? this.strToJSON(configList[0].name) : {}
-      const value = { userneeds, skus, games, config, prizes } as iRemoteData
+      const value = { config, prizes } as iRemoteData
       remotestore.set(value)
       return value
     } catch (error: any) {
@@ -61,39 +60,15 @@ export class Featurebox extends Util {
     return arr
   }
 
-  async build() {
-    const data = get(remotestore) as iRemoteData
-    const { userneeds, games, skus, config } = data
-
-    const showGames =  config[eFeaturebox.DISPLAYGAMES]
-    const showFeatureBoxTitle = config[eFeaturebox.DISPLAYFEATUREBOXTITLE]
-    const showDoubleBanners = config[eFeaturebox.DISPLAYDOUBLEBANNER]
-    const showCollectionIcons = config[eFeaturebox.DISPLAYCOLLECTIONICONS]
-    const showCatalog = config[eFeaturebox.DISPLAYCATALOG]
-
-    if (showGames === eFeaturebox.YES) {
-      console.log("show games")
-    }
-    if (showFeatureBoxTitle === eFeaturebox.YES) {
-      console.log("show featurebox title")
-    }
-
-    if (showDoubleBanners === eFeaturebox.YES) {
-      console.log("show double banners")
-    }
-
-    if (showCollectionIcons === eFeaturebox.YES) {
-      console.log("show collection icons")
-    }
-    console.log("show all showables")
-
-    if (showCatalog === eFeaturebox.YES) {
-      // const urls = skus.map(prd => this.getSKUUrl(prd.sku))
-      // const skuList = await this.getskudata(urls) as unknown as iSKU[]
-      // const products = skuList ? skuList.filter(sku => sku !== null) : []
-      console.log("show all products")
-      // console.log({ products })
-    }
+  show() {
+    const { config } = this.configAndGameName()
+    const games = config[eFeaturebox.DISPLAYGAMES] === eFeaturebox.YES ? true : false
+    const title = config[eFeaturebox.DISPLAYFEATUREBOXTITLE] === eFeaturebox.YES ? true : false
+    const doubleBanners = config[eFeaturebox.DISPLAYDOUBLEBANNER] === eFeaturebox.YES ? true : false
+    const userneeds = config[eFeaturebox.DISPLAYCOLLECTIONICONS] === eFeaturebox.YES ? true : false
+    const catalog = config[eFeaturebox.DISPLAYCATALOG] === eFeaturebox.YES ? true : false
+    
+    return { games, title, doubleBanners, userneeds, catalog }
   }
 
   configAndGameName() {
@@ -130,16 +105,60 @@ export class Featurebox extends Util {
     const remotedata = get(remotestore) as iRemoteData
     return remotedata.userneeds
   }
-  
-  getSKUUrl(sku: string) {
-    const isCatalog = sku.indexOf("https") !== -1
-    if (isCatalog) {
-      return sku
+
+  getPrizes() {
+    const remotedata = get(remotestore) as iRemoteData
+    const { prizes } = remotedata
+    const times = prizes.map(prize => +new Date(prize.time))
+    const unique = [...new Set(times)].sort((a, b) => a - b)
+
+    const pastTimes = unique.filter(time => this.isPast(time))
+    const liveTimes = unique.filter(time => this.isLive(time))
+    const futrTimes = unique.filter(time => this.isFuture(time))
+
+    const reordered = [...liveTimes, ...futrTimes, ...pastTimes ]
+    
+    const map: Map<number, iPrize[]> = new Map()
+
+    reordered.forEach(time => {
+      const filtered = prizes.filter(prize => +new Date(prize.time) === time)
+      map.set(time, filtered)
+    })
+
+    console.log({ map })
+    return map
+  }
+
+  async getProductsHtml() {
+    const remotedata = get(remotestore) as iRemoteData
+    const { skus } = remotedata
+    const urls = skus.map(_ => _.sku)
+    const texts = await this.getskudata(urls)
+
+    console.log({ texts })
+    return texts
+  }
+
+  async getskudata(urls: string[]) {
+    try {
+      const promises = await Promise.all(
+        urls.map(async (url) => await this.#products.getSKU(url))
+      )
+      const docs = promises.flat()
+      return docs
+    } catch (error) {
+      this.onError(error)
+      return null
     }
-    const domain = this.config[eConstants.COUNTRYDOMAIN]
-    return domain === eConstants.ZANDOTLD
-      ? `https://www.zando.co.za/catalog/?q=${sku}`
-      : `https://www.jumia${domain}/catalog/?q=${sku}`
+  }
+
+  getProducts(ref: HTMLElement) {
+    const extractedProducts = this.#products.getProducts(ref)
+    const formattedProducts = this.isMobile
+    ? this.#products.mobile(extractedProducts)
+    : this.#products.desktop(extractedProducts)
+    const products = JSON.parse(formattedProducts).products as iSKU[]
+    return products
   }
 
   isAtScrollEdge(products: HTMLElement) {

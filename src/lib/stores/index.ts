@@ -10,4 +10,6 @@ const fboxstore = writable<Featurebox>(fbox)
 
 const emailstore = writable<string | undefined>()
 
+const convexstore = writable<any>()
+
 export { remotestore, settingstore, fboxstore }
