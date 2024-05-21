@@ -19,7 +19,7 @@
   </Tabs.List>
   
   {#each Array.from(map.entries()) as [key, value] (key)}
-    <Tabs.Content value={`id-${key}`}>
+    <Tabs.Content value={`id-${key}`} class="h-fit max-h-[300px] overflow-auto">
       {#each value as item, i}
       <Card class="aspect-[312/160] w-full grid grid-cols-2 gap-2 p-2 first:mt-0 last:mb-0 my-2">
         <img class="w-full object-cover" src={item.image} alt={item.name}/>
