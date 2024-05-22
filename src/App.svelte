@@ -26,7 +26,7 @@
     // build is not supposed to happen here
     // $fboxstore.build()
     if (!emails) {
-      window.parent.location.href = common.redirectUrl();
+      window.location.href = common.redirectUrl();
     } else {
       if ($settingstore) {
         $settingstore.email = emails[0] as string;
