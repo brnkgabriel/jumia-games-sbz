@@ -112,3 +112,5 @@
   -webkit-line-clamp: 4;
   overflow: hidden;
 }
+
+header, footer { display: none !important }

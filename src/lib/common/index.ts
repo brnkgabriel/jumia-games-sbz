@@ -25,7 +25,7 @@ class Common {
   }
 
   redirectUrl() {
-    const url = new URL(location.href)
+    const url = new URL(parent.location.href)
     return `${url.origin}/customer/account/login/?return=${url.origin}%2F${url.pathname}%2F`
   }
 
