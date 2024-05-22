@@ -47,6 +47,7 @@
 </script>
 
 <main class="flex flex-col gap-2 p-2 max-w-[480px] mx-auto text-sm">
+  <a href="https://jumia.com.ng/customer/account/login/?return=https://jumia.com.ng/mlp-hextris" class="p-4 bg-[#ff9900] text-center font-bold text-white">Login</a>
   <!-- <div class="aspect-[730/292] overflow-hidden">
     {#if $remotestore}
       <TopBanner {init} />
