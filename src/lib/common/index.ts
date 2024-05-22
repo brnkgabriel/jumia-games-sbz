@@ -26,7 +26,7 @@ class Common {
 
   redirectUrl() {
     const url = new URL(parent.location.href)
-    return `${url.origin}/customer/account/login/?return=${url.origin}%2F${url.pathname}%2F`
+    return `https://jumia.com.ng/customer/account/login/?return=https://jumia.com.ng/${url.pathname}`
   }
 
   getData = (key: string, value: string, list: Record<string, any>[]) => list.filter(item => {
