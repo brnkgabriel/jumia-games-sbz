@@ -27,6 +27,7 @@ export enum eConstants {
   DIV = "div",
   CONFIG = "config",
   CREDENTIALS = "credentials",
+  SETTINGS = "settings",
   COUNTRYDOMAIN = "country_domain",
   ZANDOTLD = ".co.za",
   USERNEED = "Userneed",

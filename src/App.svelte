@@ -19,30 +19,34 @@
 
   let convexclient
 
-  const init = async () => {
-    const credentials = await common.getCredentials();
+  // const init = async () => {
+  //   const credentials = await common.getCredentials();
 
-    if ($settingstore) {
-      $settingstore.credentials = credentials as iCredentials
-    }
+  //   if ($settingstore) {
+  //     $settingstore.credentials = credentials as iCredentials
+  //   }
 
-    // await $fboxstore.setRemotestore();
+  //   // await $fboxstore.setRemotestore();
 
-    // build is not supposed to happen here
-    // $fboxstore.build()
-    // if (!emails) {
-    //   window.location.href = common.redirectUrl();
-    // } else {
-    //   if ($settingstore) {
-    //     $settingstore.email = emails[0] as string;
-    //   }
-    // }
-  };
+  //   // build is not supposed to happen here
+  //   // $fboxstore.build()
+  //   // if (!emails) {
+  //   //   window.location.href = common.redirectUrl();
+  //   // } else {
+  //   //   if ($settingstore) {
+  //   //     $settingstore.email = emails[0] as string;
+  //   //   }
+  //   // }
+  // };
 
-  init();
+  // init();
   onMount(() => {
     // @ts-ignore
-    $settingstore = window.settings as iSettings;
+    const settings = window.settings as iSettings;
+    $settingstore.country = settings.country
+    $settingstore.email = settings.email
+    $settingstore.game = settings.game
+    $settingstore.language = settings.language
 
     // @ts-ignore
     convexclient = window.convexclient
@@ -59,7 +63,7 @@
       <TopBanner {init} />
     {/if}
   </div> -->
-  {#if $settingstore && $settingstore.credentials}
+  {#if $settingstore.credentials}
   <StatusBar />
   <div class="w-full rounded-lg overflow-hidden">
     <Tabs />
