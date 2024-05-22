@@ -9,8 +9,8 @@
 <div class="flex items-center justify-between gap-2">
   <div class="flex flex-col items-center">
     <p class="font-bold uppercase text-muted-foreground">Welcome</p>
-    {#if $settingstore?.email}
-      <span class="text-xs font-bold">{emailPrefix($settingstore.email)}</span
+    {#if $settingstore.credentials}
+      <span class="text-xs font-bold">{$settingstore.credentials.name}</span
       >
     {:else}
       <Skeleton class="h-4 w-full" />
