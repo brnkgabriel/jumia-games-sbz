@@ -19,7 +19,8 @@ export interface iSettings {
   country: TCountry;
   language: TLanguage;
   game: TGame;
-  email: string
+  email: string;
+  credentials: iCredentials | null
 }
 
 export interface iRemoteData {
@@ -128,3 +129,8 @@ export interface iCampaign {
 }
 
 export type FormatToken = 'YYYY' | 'MM' | 'MMM' | 'DD' | 'HH' | 'mm' | 'ss';
+
+export interface iCredentials {
+  name: string;
+  email: string;
+}

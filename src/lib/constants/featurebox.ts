@@ -24,13 +24,13 @@ export class Featurebox extends Util {
       const json = await response.json()
       const data = json.records
 
-      const prizes = this.getList(eConstants.INITIATIVE, settings.game, data)
+      // const prizes = this.getList(eConstants.INITIATIVE, settings.game, data)
       // const userneeds = this.getList(eConstants.INITIATIVE, eConstants.USERNEED, data)
       // const skus = this.getList(eConstants.INITIATIVE, eConstants.FBSKUS, data)
       // const games = this.getList(eConstants.INITIATIVE, eConstants.GAMES, data)
       const configList = this.getList(eConstants.INITIATIVE, eConstants.CONFIG, data)
       const config = configList[0] ? this.strToJSON(configList[0].name) : {}
-      const value = { config, prizes } as iRemoteData
+      const value = { config } as iRemoteData
       remotestore.set(value)
       return value
     } catch (error: any) {

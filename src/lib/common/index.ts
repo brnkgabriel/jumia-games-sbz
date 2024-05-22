@@ -1,20 +1,23 @@
 import { eConstants, eFeaturebox } from "$lib/constants/index"
-import type { TCountry, TGame, TLanguage, iSettings } from "$lib/interfaces/index";
+import type { TCountry, TGame, TLanguage, iCredentials, iSettings } from "$lib/interfaces/index";
 import { googleSheetsApi } from "./config";
 import { remotestore, settingstore } from "$lib/stores/index";
 import { get } from "svelte/store";
 
 class Common {
   async getCredentials() {
-    try {
-      const url = new URL(location.href);
-      const res = await fetch(`${url.origin}/customer/account/index/`);
-      const text = await res.text();
-      let emails = this.extractEmails(text);
-      return emails;
-    } catch (error: any) {
-      return null;
-    }
+    const lsItem = localStorage.getItem("credentials")
+    const credentials = lsItem ? JSON.parse(lsItem) as iCredentials : null
+    return credentials
+    // try {
+    //   const url = new URL(location.href);
+    //   const res = await fetch(`${url.origin}/customer/account/index/`);
+    //   const text = await res.text();
+    //   let emails = this.extractEmails(text);
+    //   return emails;
+    // } catch (error: any) {
+    //   return null;
+    // }
   }
 
   emailPrefix = (email: string) => email.split("@")[0];

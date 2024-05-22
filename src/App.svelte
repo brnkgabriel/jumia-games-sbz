@@ -1,10 +1,11 @@
 <script lang="ts">
   import "./app.css";
   import Carousel from "./lib/components/widgets/Carousel.svelte";
+  import Login from './lib/components/widgets/Login.svelte'
   import Tabs from "./lib/components/widgets/Tabs.svelte";
   import { Skeleton } from "./lib/components/ui/skeleton";
   import { common } from "./lib/common/index";
-  import type { iSettings } from "./lib/interfaces/index";
+  import type { iCredentials, iSettings } from "./lib/interfaces/index";
   import { remotestore, settingstore, fboxstore } from "$lib/stores";
   import { onMount } from "svelte";
   import Games from "$lib/components/partials/Games.svelte";
@@ -19,19 +20,23 @@
   let convexclient
 
   const init = async () => {
-    const emails = await common.getCredentials();
+    const credentials = await common.getCredentials();
 
-    await $fboxstore.setRemotestore();
+    if ($settingstore) {
+      $settingstore.credentials = credentials as iCredentials
+    }
+
+    // await $fboxstore.setRemotestore();
 
     // build is not supposed to happen here
     // $fboxstore.build()
-    if (!emails) {
-      window.location.href = common.redirectUrl();
-    } else {
-      if ($settingstore) {
-        $settingstore.email = emails[0] as string;
-      }
-    }
+    // if (!emails) {
+    //   window.location.href = common.redirectUrl();
+    // } else {
+    //   if ($settingstore) {
+    //     $settingstore.email = emails[0] as string;
+    //   }
+    // }
   };
 
   init();
@@ -44,22 +49,27 @@
 
     console.log({ convexclient })
   });
+
+  // todo: login form that uses localStorage to persist credentials
 </script>
 
 <main class="flex flex-col gap-2 p-2 max-w-[480px] mx-auto text-sm">
-  <a href="https://jumia.com.ng/customer/account/login/?return=https://jumia.com.ng/mlp-hextris" class="p-4 bg-[#ff9900] text-center font-bold text-white">Login</a>
   <!-- <div class="aspect-[730/292] overflow-hidden">
     {#if $remotestore}
       <TopBanner {init} />
     {/if}
   </div> -->
+  {#if $settingstore && $settingstore.credentials}
   <StatusBar />
   <div class="w-full rounded-lg overflow-hidden">
     <Tabs />
   </div>
-  {#if $remotestore}
-    <Prizes {init} />
+  {:else}
+  <Login />
   {/if}
+  <!-- {#if $remotestore}
+    <Prizes {init} />
+  {/if} -->
   <!-- {#if $remotestore && $fboxstore.show().games}
     <Games {init} />
   {/if}

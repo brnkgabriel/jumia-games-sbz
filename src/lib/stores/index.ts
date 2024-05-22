@@ -4,7 +4,13 @@ import { Featurebox, fbox } from "$lib/constants/featurebox";
 
 const remotestore = writable<iRemoteData | undefined>()
 
-const settingstore = writable<iSettings | undefined>()
+const settingstore = writable<iSettings>({
+  country: "ng",
+  credentials: null,
+  email: "",
+  game: "hextris",
+  language: "en"
+})
 
 const fboxstore = writable<Featurebox>(fbox)
 
